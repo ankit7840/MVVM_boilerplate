@@ -4,7 +4,7 @@ import retrofit2.http.GET
 
 interface ApiService {
     //  for adding extra part of the url after base url
-    @GET("endpoint")
-    suspend fun fetchData(): List<ApiResponse>
+    @GET("")
+    suspend fun fetchData(): ApiResponse
 }
 
