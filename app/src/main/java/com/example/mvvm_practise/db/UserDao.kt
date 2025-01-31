@@ -18,6 +18,7 @@ interface DataDao {
     fun getAllData(): Flow<List<DataEntity>>
 }
 
+//database setup
 @Database(entities = [DataEntity::class], version = 1, exportSchema = false)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun dataDao(): DataDao
