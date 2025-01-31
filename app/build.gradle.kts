@@ -76,4 +76,18 @@ dependencies {
 
     implementation("io.coil-kt:coil-compose:2.1.0")
 
+
+    // AndroidX Fragment
+    implementation("androidx.fragment:fragment-ktx:1.5.7")
+
+    // Material Components
+    implementation("com.google.android.material:material:1.9.0")
+
+    // ViewModel
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.1")
+
+
+    implementation("androidx.appcompat:appcompat:1.6.1")
+
+
 }

@@ -4,6 +4,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 
 
+
 @Entity(tableName = "data_table")
 data class DataEntity(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
@@ -24,4 +25,18 @@ data class Product(
 )
 
 data class ApiResponse(val products: List<Product>)
+
+data class AddProductResponse(
+    val message: String,
+    val product_details: String,
+    val product_id: String,
+    val success: String
+)
+
+data class ErrorResponse(
+    val error_code: String,
+    val message: String,
+    val request_id: String,
+    val success: Boolean
+)
 

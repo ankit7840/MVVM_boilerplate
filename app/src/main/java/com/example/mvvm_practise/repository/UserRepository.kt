@@ -4,11 +4,16 @@ import androidx.room.Room
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.example.mvvm_practise.db.AppDatabase
+import com.example.mvvm_practise.model.AddProductResponse
 import com.example.mvvm_practise.model.DataEntity
+import com.example.mvvm_practise.model.ErrorResponse
 import com.example.mvvm_practise.service.ApiService
+import com.google.gson.Gson
+import com.google.gson.JsonSyntaxException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
+import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
@@ -60,7 +65,43 @@ class UserRepository(context : Context) {
         }
     }
 
-
     // this fucntions will provide the data after fetching and storing it into the database
     fun getAllData(): Flow<List<DataEntity>> = dataDao.getAllData()
+
+
+    suspend fun addProduct(
+        name: String,
+        price: Float,
+        type: String,
+        tax: Float
+    ): Result<AddProductResponse> {
+        return withContext(Dispatchers.IO) {
+            val response: Response<AddProductResponse> = apiService.addProduct(
+                name = name,
+                type = type,
+                price = price,
+                tax = tax
+            )
+
+            if (response.isSuccessful) {
+                response.body()?.let {
+                    Result.success(it)
+                } ?: Result.failure(Exception("Response body is null"))
+            } else {
+                val errorBody = response.errorBody()?.string()
+                if (errorBody != null) {
+                    try {
+                        val errorResponse = Gson().fromJson(errorBody, ErrorResponse::class.java)
+                        Result.failure(Exception(errorResponse.message))
+                    } catch (e: JsonSyntaxException) {
+                        Result.failure(Exception("JSON parsing error"))
+                    }
+                } else {
+                    Result.failure(Exception("Unknown error"))
+                }
+            }
+        }
+    }
+
+
 }

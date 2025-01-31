@@ -1,22 +1,16 @@
 package com.example.mvvm_practise.view
 
 import android.os.Bundle
-import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
-import androidx.compose.animation.AnimatedVisibility
+import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.animation.animateContentSize
-import androidx.compose.animation.expandVertically
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -44,13 +38,14 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.fragment.app.FragmentActivity
 import coil.compose.rememberImagePainter
 import com.example.mvvm_practise.R
 import com.example.mvvm_practise.model.DataEntity
@@ -59,22 +54,25 @@ import com.example.mvvm_practise.viewModel.UserViewModel
 import com.example.mvvm_practise.viewModel.UserViewModelFactory
 import kotlin.getValue
 
-class MainActivity : ComponentActivity() {
-    private  val viewModel: UserViewModel by viewModels{
+
+class MainActivity : AppCompatActivity() {
+    private val viewModel: UserViewModel by viewModels {
         val repository = UserRepository(this)
         UserViewModelFactory(repository)
     }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             DataScreen(viewModel)
         }
-        }
     }
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DataScreen(viewModel: UserViewModel) {
+    val context = LocalContext.current // Store the context at the composable level
     val data by viewModel.data.collectAsState(initial = emptyList())
     var searchQuery by remember { mutableStateOf("") }
     val listState = rememberLazyListState()
@@ -82,12 +80,12 @@ fun DataScreen(viewModel: UserViewModel) {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFFE0F7FA)) // Light grayish-blue background color
+            .background(Color(0xFFE0F7FA))
     ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(bottom = 56.dp) // Add padding to avoid overlap with the button
+                .padding(bottom = 56.dp)
         ) {
             TextField(
                 value = searchQuery,
@@ -97,29 +95,29 @@ fun DataScreen(viewModel: UserViewModel) {
                     .padding(16.dp)
                     .border(
                         width = 1.dp,
-                        color = Color(0xFF0077BE), // Ocean blue border color
+                        color = Color(0xFF00008B), // Deep blue color
                         shape = RoundedCornerShape(8.dp)
                     )
                     .background(
-                        Color(0xFF00BFFF),
+                        Color(0xFFFFF5EE), // Pearl white background
                         shape = RoundedCornerShape(8.dp)
-                    ), // Ocean blue background color
+                    ),
                 placeholder = {
                     Text(
                         "Search by product name",
-                        color = Color.White
+                        color = Color.Gray
                     )
-                }, // White placeholder text
+                },
                 colors = TextFieldDefaults.colors(
-                    focusedTextColor = Color.White,
-                    unfocusedTextColor = Color.White,
+                    focusedTextColor = Color.Black,
+                    unfocusedTextColor = Color.Black,
                     disabledTextColor = Color.Gray,
                     errorTextColor = Color.Red,
-                    focusedContainerColor = Color(0xFF00BFFF), // Ocean blue for focused state
-                    unfocusedContainerColor = Color(0xFF00BFFF), // Ocean blue for unfocused state
-                    disabledContainerColor = Color(0xFF00BFFF),
+                    focusedContainerColor = Color.Transparent,
+                    unfocusedContainerColor = Color.Transparent,
+                    disabledContainerColor = Color.Transparent,
                     errorContainerColor = Color(0xFFFFCDD2),
-                    cursorColor = Color.White,
+                    cursorColor = Color.Black,
                     focusedIndicatorColor = Color.Transparent,
                     unfocusedIndicatorColor = Color.Transparent
                 ),
@@ -132,37 +130,28 @@ fun DataScreen(viewModel: UserViewModel) {
 
             LazyColumn(state = listState, modifier = Modifier.weight(1f)) {
                 items(filteredData) { item ->
-                    val index = filteredData.indexOf(item)
-                    val offset = listState.layoutInfo.visibleItemsInfo.firstOrNull()?.offset ?: 0
-                    val scale = 1f - (index - offset / 1000f).coerceIn(0f, 0.5f)
-
-                    AnimatedVisibility(
-                        visible = true,
-                        enter = fadeIn() + expandVertically(),
-                        exit = fadeOut() + shrinkVertically()
-                    ) {
-                        DataEntityItem(
-                            dataEntity = item,
-                            modifier = Modifier.graphicsLayer {
-                                scaleX = scale
-                                scaleY = scale
-                            }
-                        )
-                    }
-                    Spacer(modifier = Modifier.height(8.dp)) // Add space between items
+                    DataEntityItem(dataEntity = item)
                 }
             }
         }
 
         Button(
-            onClick = { /* Handle button click */ },
-            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF000080)), // Navy blue color
+            onClick = {
+                val activity = context as? FragmentActivity
+                activity?.let {
+                    AddProductBottomSheetDialogFragment().show(
+                        it.supportFragmentManager,
+                        "AddProductBottomSheetDialogFragment"
+                    )
+                }
+            },
+            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF000080)),
             modifier = Modifier
                 .align(Alignment.BottomCenter)
                 .fillMaxWidth()
                 .padding(13.dp)
         ) {
-            Text(" Add Product ", color = Color.White)
+            Text("ADD PRODUCT", color = Color.White)
         }
     }
 }
