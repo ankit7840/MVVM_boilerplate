@@ -1,5 +1,7 @@
-<?xml version="1.0" encoding="utf-8"?>
+<!-- res/values/styles.xml -->
 <resources>
-
-    <style name="Theme.MVVM_practise" parent="android:Theme.Material.Light.NoActionBar" />
+    <!-- Custom Theme that inherits from Theme.AppCompat -->
+    <style name="Theme.MVVM_practise" parent="Theme.AppCompat.DayNight">
+        <!-- Customize your theme here if needed -->
+    </style>
 </resources>
