@@ -1,6 +1,7 @@
 package com.example.mvvm_practise.view
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -45,18 +46,30 @@ class AddProductBottomSheetDialogFragment : BottomSheetDialogFragment() {
             val type = editTextProductType.text.toString().trim()
             val tax = editTextProductTax.text.toString().trim()
 
+            Log.d(
+                "AddProduct",
+                "Button clicked with values - Name: $name, Price: $price, Type: $type, Tax: $tax"
+            )
+
+
             if (name.isEmpty() || price.isEmpty() || type.isEmpty() || tax.isEmpty()) {
                 Toast.makeText(context, "All fields are required", Toast.LENGTH_SHORT).show()
             } else {
                 val priceValue = price.toFloatOrNull() ?: 0f
                 val taxValue = tax.toFloatOrNull() ?: 0f
 
+
+                Log.d(
+                    "AddProduct",
+                    "Calling viewModel.addProduct with values - Name: $name, Price: $priceValue, Type: $type, Tax: $taxValue"
+                )
                 viewModel.addProduct(name, priceValue, type, taxValue)
                 observeAddProductResult()
                 dismiss()
             }
         }
 
+        // for managing  kyboard does not overlap the code
         dialog?.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
 
         return view
@@ -66,6 +79,8 @@ class AddProductBottomSheetDialogFragment : BottomSheetDialogFragment() {
     private fun observeAddProductResult() {
         viewModel.addProductResult.observe(viewLifecycleOwner, Observer { result ->
             result.onSuccess { response ->
+                Log.d("AddProduct", "Product added successfully: ${response.message}")
+
                 Toast.makeText(
                     context,
                     "Product added successfully: ${response.message}",
@@ -73,6 +88,7 @@ class AddProductBottomSheetDialogFragment : BottomSheetDialogFragment() {
                 ).show()
                 dismiss()
             }.onFailure { exception ->
+                Log.e("AddProduct", "Failed to add product: ${exception.message}", exception)
                 Toast.makeText(
                     context,
                     "Failed to add product: ${exception.message}",

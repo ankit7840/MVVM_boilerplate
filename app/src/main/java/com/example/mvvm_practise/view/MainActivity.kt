@@ -158,7 +158,7 @@ fun DataScreen(viewModel: UserViewModel) {
 
 
 @Composable
-fun DataEntityItem(dataEntity: DataEntity, modifier: Modifier = Modifier) {
+fun DataEntityItem(dataEntity: DataEntity) {
 
     val specificUrl =
         "https://thumbs.dreamstime.com/z/flat-isolated-vector-eps-illustration-icon-minimal-design-long-shadow-product-not-available-icon-117825338.jpg"

@@ -19,8 +19,8 @@ interface ApiService {
     suspend fun addProduct(
         @Part("product_name") name: String,
         @Part("product_type") type: String,
-        @Part("price") price: Float,
-        @Part("tax") tax: Float,
+        @Part("price") price: String,
+        @Part("tax") tax: String,
         @Part files: List<MultipartBody.Part> = emptyList()
     ): Response<AddProductResponse>
 }

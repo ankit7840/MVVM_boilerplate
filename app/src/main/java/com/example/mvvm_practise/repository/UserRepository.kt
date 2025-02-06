@@ -1,4 +1,5 @@
 package com.example.mvvm_practise.repository
+
 import android.content.Context
 import androidx.room.Room
 import androidx.room.migration.Migration
@@ -18,7 +19,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 
-class UserRepository(context : Context) {
+class UserRepository(context: Context) {
 
     val MIGRATION_1_2 = object : Migration(1, 2) {
         override fun migrate(database: SupportSQLiteDatabase) {
@@ -27,6 +28,7 @@ class UserRepository(context : Context) {
             // database.execSQL("ALTER TABLE DataEntity ADD COLUMN new_column INTEGER NOT NULL DEFAULT 0")
         }
     }
+
     //  defining Database and DataDao for database operations
     // Define the Room database with migration
     private val database: AppDatabase = Room.databaseBuilder(
@@ -79,8 +81,8 @@ class UserRepository(context : Context) {
             val response: Response<AddProductResponse> = apiService.addProduct(
                 name = name,
                 type = type,
-                price = price,
-                tax = tax
+                price = price.toString(),
+                tax = tax.toString()
             )
 
             if (response.isSuccessful) {

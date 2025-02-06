@@ -28,6 +28,7 @@ class UserViewModel(private val repository: UserRepository) : ViewModel() {
     init {
         fetchDataAndUpdate()
     }
+
     private fun fetchDataAndUpdate() {
         viewModelScope.launch {
             repository.fetchDataFromApi()

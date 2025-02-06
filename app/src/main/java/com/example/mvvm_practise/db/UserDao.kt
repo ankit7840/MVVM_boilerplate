@@ -6,6 +6,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.RoomDatabase
+import com.example.mvvm_practise.model.AddProductEntity
 import com.example.mvvm_practise.model.DataEntity
 import kotlinx.coroutines.flow.Flow
 
@@ -19,7 +20,12 @@ interface DataDao {
 }
 
 //database setup
-@Database(entities = [DataEntity::class], version = 1, exportSchema = false)
+@Database(
+    entities = [DataEntity::class, AddProductEntity::class],
+    version = 3,
+    exportSchema = false
+)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun dataDao(): DataDao
+    abstract fun addProductDao(): AddProductDao
 }
