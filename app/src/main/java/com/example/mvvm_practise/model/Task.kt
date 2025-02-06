@@ -46,6 +46,10 @@ interface TaskDao {
 
     @Query("DELETE FROM task_table WHERE id = :taskId")
     fun deleteTask(taskId: Int)
+
+
+    @Query("UPDATE task_table SET title = :title, description = :description, dueDate = :dueDate, priority = :priority WHERE id = :id")
+    fun updateTaskById(id: Int, title: String, description: String, dueDate: Long, priority: String)
 }
 
 
@@ -54,7 +58,6 @@ class DateConverter {
     fun fromTimestamp(value: Long?): Date? {
         return value?.let { Date(it) }
     }
-
     @TypeConverter
     fun dateToTimestamp(date: Date?): Long? {
         return date?.time

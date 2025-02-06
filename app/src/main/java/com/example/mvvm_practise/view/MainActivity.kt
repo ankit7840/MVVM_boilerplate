@@ -1,5 +1,6 @@
 package com.example.mvvm_practise.view
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
@@ -9,6 +10,7 @@ import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -75,6 +77,15 @@ fun DataScreen(viewModel: UserViewModel) {
                                 scope.launch {
                                     viewModel.removeTask(item)
                                 }
+                            },
+                            onItemClick = { clickedItem ->
+                                val intent = Intent(context, TaskDetailActivity::class.java).apply {
+                                    putExtra("taskId", clickedItem.id)
+                                    putExtra("taskTitle", clickedItem.title)
+                                    putExtra("taskDescription", clickedItem.description)
+                                    putExtra("taskPriority", clickedItem.priority)
+                                }
+                                context.startActivity(intent)
                             }
                         )
                     }
@@ -105,7 +116,11 @@ fun DataScreen(viewModel: UserViewModel) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DataEntityItem(taskEntity: TaskEntity, onDismiss: () -> Unit) {
+fun DataEntityItem(
+    taskEntity: TaskEntity,
+    onDismiss: () -> Unit,
+    onItemClick: (TaskEntity) -> Unit
+) {
     var isVisible by remember { mutableStateOf(true) }
 
     val dismissState = rememberSwipeToDismissBoxState(
@@ -155,6 +170,7 @@ fun DataEntityItem(taskEntity: TaskEntity, onDismiss: () -> Unit) {
                         .padding(16.dp)
                         .background(Color.White)
                         .wrapContentHeight()
+                        .clickable { onItemClick(taskEntity) } // Add clickable modifier
                         .animateContentSize() // Ensures smooth collapse animation
                 ) {
                     Column(

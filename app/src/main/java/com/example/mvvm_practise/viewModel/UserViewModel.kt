@@ -19,6 +19,7 @@ class UserViewModel(private val repository: UserRepository) : ViewModel() {
         checkDataPresence()
     }
 
+
     private fun checkDataPresence() {
         viewModelScope.launch {
             val isDataPresent = repository.isDataPresent()
@@ -26,25 +27,31 @@ class UserViewModel(private val repository: UserRepository) : ViewModel() {
             if (!isDataPresent) {
                 fetchDataAndUpdateTask()
             }
-            repository.getAllTasks().collect { tasks -> // ✅ Use `collect`
+            repository.getAllTasks().collect { tasks ->
                 _data.value = tasks
             }
         }
     }
-
     private fun fetchDataAndUpdateTask() {
         viewModelScope.launch {
             repository.fetchTaskandStore()
         }
     }
-
     fun addTask(title: String, title_description: String, priority: String) {
         viewModelScope.launch {
             repository.addTask(title, title_description, priority)
             _data.value = repository.getAllTasks().first() // Refresh the task list
         }
     }
+    fun updateTask(taskEntity: TaskEntity) {
+        viewModelScope.launch {
+            repository.updateTask(taskEntity)
+            repository.getAllTasks().collect { updatedList ->
+                _data.value = updatedList
+            }
+        }
 
+    }
     fun removeTask(taskEntity: TaskEntity) {
         viewModelScope.launch {
             repository.removeTask(taskEntity.id)
