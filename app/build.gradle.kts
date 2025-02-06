@@ -90,4 +90,10 @@ dependencies {
     implementation("androidx.appcompat:appcompat:1.6.1")
 
 
+    implementation("com.google.accompanist:accompanist-swiperefresh:0.30.1")
+
+
+    // Ensure latest version
+
+
 }

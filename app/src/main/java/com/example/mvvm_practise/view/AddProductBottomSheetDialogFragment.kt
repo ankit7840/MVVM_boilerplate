@@ -1,16 +1,16 @@
 package com.example.mvvm_practise.view
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
 import android.widget.Button
 import android.widget.EditText
+import android.widget.RadioButton
+import android.widget.RadioGroup
 import android.widget.Toast
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.Observer
 import com.example.mvvm_practise.R
 import com.example.mvvm_practise.viewModel.UserViewModel
 import com.google.android.material.bottomsheet.BottomSheetBehavior
@@ -19,11 +19,11 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 
 class AddProductBottomSheetDialogFragment : BottomSheetDialogFragment() {
 
-    private lateinit var editTextProductName: EditText
-    private lateinit var editTextProductPrice: EditText
-    private lateinit var editTextProductType: EditText
-    private lateinit var editTextProductTax: EditText
-    private lateinit var buttonAddProduct: Button
+    private lateinit var taskTitle: EditText
+    private lateinit var taskDescription: EditText
+    private lateinit var radioGroupPriority: RadioGroup
+
+    private lateinit var buttonAddTask: Button
 
     private val viewModel: UserViewModel by activityViewModels()
 
@@ -33,38 +33,31 @@ class AddProductBottomSheetDialogFragment : BottomSheetDialogFragment() {
     ): View? {
         val view = inflater.inflate(R.layout.bottom_sheet_add_product, container, false)
 
-        editTextProductName = view.findViewById(R.id.editTextProductName)
-        editTextProductPrice = view.findViewById(R.id.editTextProductPrice)
-        editTextProductType = view.findViewById(R.id.editTextProductType)
-        editTextProductTax = view.findViewById(R.id.editTextProductTax)
-        buttonAddProduct = view.findViewById(R.id.buttonAddProduct)
+        taskTitle = view.findViewById(R.id.editTextTaskTitle)
+        taskDescription = view.findViewById(R.id.editTextTaskDescription)
+        buttonAddTask = view.findViewById(R.id.buttonAddTask)
+        radioGroupPriority = view.findViewById(R.id.radioGroupPriority)
 
 
-        buttonAddProduct.setOnClickListener {
-            val name = editTextProductName.text.toString().trim()
-            val price = editTextProductPrice.text.toString().trim()
-            val type = editTextProductType.text.toString().trim()
-            val tax = editTextProductTax.text.toString().trim()
+        buttonAddTask.setOnClickListener {
 
-            Log.d(
-                "AddProduct",
-                "Button clicked with values - Name: $name, Price: $price, Type: $type, Tax: $tax"
-            )
+            val title = taskTitle.text.toString().trim()
+            val Description = taskDescription.text.toString().trim()
+            val selectedPriorityId = radioGroupPriority.checkedRadioButtonId
+            val selectedPriority =
+                view.findViewById<RadioButton>(selectedPriorityId)?.text.toString()
 
 
-            if (name.isEmpty() || price.isEmpty() || type.isEmpty() || tax.isEmpty()) {
+
+            if (title.isEmpty() || Description.isEmpty() || selectedPriorityId == -1) {
                 Toast.makeText(context, "All fields are required", Toast.LENGTH_SHORT).show()
             } else {
-                val priceValue = price.toFloatOrNull() ?: 0f
-                val taxValue = tax.toFloatOrNull() ?: 0f
 
-
-                Log.d(
-                    "AddProduct",
-                    "Calling viewModel.addProduct with values - Name: $name, Price: $priceValue, Type: $type, Tax: $taxValue"
-                )
-                viewModel.addProduct(name, priceValue, type, taxValue)
-                observeAddProductResult()
+                viewModel.addTask(title, Description, selectedPriority)
+                Toast.makeText(context, "Task added successfully", Toast.LENGTH_SHORT).show()
+//                taskTitle.text.clear()
+//                taskDescription.text.clear()
+//                radioGroupPriority.clearCheck()
                 dismiss()
             }
         }
@@ -73,29 +66,6 @@ class AddProductBottomSheetDialogFragment : BottomSheetDialogFragment() {
         dialog?.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
 
         return view
-    }
-
-
-    private fun observeAddProductResult() {
-        viewModel.addProductResult.observe(viewLifecycleOwner, Observer { result ->
-            result.onSuccess { response ->
-                Log.d("AddProduct", "Product added successfully: ${response.message}")
-
-                Toast.makeText(
-                    context,
-                    "Product added successfully: ${response.message}",
-                    Toast.LENGTH_SHORT
-                ).show()
-                dismiss()
-            }.onFailure { exception ->
-                Log.e("AddProduct", "Failed to add product: ${exception.message}", exception)
-                Toast.makeText(
-                    context,
-                    "Failed to add product: ${exception.message}",
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
-        })
     }
 
     override fun onStart() {

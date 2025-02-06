@@ -8,6 +8,7 @@ import com.example.mvvm_practise.db.AppDatabase
 import com.example.mvvm_practise.model.AddProductResponse
 import com.example.mvvm_practise.model.DataEntity
 import com.example.mvvm_practise.model.ErrorResponse
+import com.example.mvvm_practise.model.TaskEntity
 import com.example.mvvm_practise.service.ApiService
 import com.google.gson.Gson
 import com.google.gson.JsonSyntaxException
@@ -17,6 +18,8 @@ import kotlinx.coroutines.withContext
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.util.Calendar
+import java.util.Date
 
 
 class UserRepository(context: Context) {
@@ -41,6 +44,9 @@ class UserRepository(context: Context) {
 
 
     private val dataDao = database.dataDao()
+    private val addTaskDao = database.taskDao()
+    private val addProductDao = database.addProductDao()
+
     private val apiService: ApiService = Retrofit.Builder()
         .baseUrl("https://app.getswipe.in/api/public/")
         .addConverterFactory(GsonConverterFactory.create())
@@ -105,5 +111,64 @@ class UserRepository(context: Context) {
         }
     }
 
+
+    // main function for CRUD operations
+    suspend fun isDataPresent(): Boolean {
+        return withContext(Dispatchers.IO) {
+            addTaskDao.getTaskCount() > 0 // ✅ Correct coroutine usage
+        }
+    }
+
+    suspend fun fetchTaskandStore() {
+        val priorities = listOf("High", "Medium", "Low")
+        val dummyTasks = List(20) { index ->
+            TaskEntity(
+                title = "Task $index",
+                description = "Description for Task $index",
+                dueDate = getRandomDate(),
+                priority = priorities.random()
+            )
+        }
+        withContext(Dispatchers.IO) {
+            addTaskDao.insertTasks(dummyTasks)
+        }
+    }
+
+    fun getAllTasks(): Flow<List<TaskEntity>> {
+        return addTaskDao.getAllTasks() // ✅ No need for `suspend`
+    }
+
+    suspend fun removeTask(id: Int) {
+        withContext(Dispatchers.IO) {
+            addTaskDao.deleteTask(id)
+        }
+    }
+
+    suspend fun addTask(title: String, description: String, priority: String) {
+        val task = TaskEntity(
+            title = title,
+            description = description,
+            dueDate = getCurrentDate(), // want current date
+            priority = priority
+        )
+        withContext(Dispatchers.IO) {
+            addTaskDao.insertTask(task)
+        }
+    }
+
+
+    //auxilary functions
+    fun getCurrentDate(): Date {
+        return Calendar.getInstance().time
+    }
+
+    fun getRandomDate(): Date {
+        val calendar = Calendar.getInstance()
+        val year = (2020..2023).random()
+        val month = (0..11).random()
+        val day = (1..28).random() // To avoid issues with February
+        calendar.set(year, month, day)
+        return calendar.time
+    }
 
 }
