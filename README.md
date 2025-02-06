@@ -23,3 +23,9 @@ Ensure you have an Android device/emulator set up.
 Click on Run ▶ in Android Studio.
 
 
+📥 Download & Install
+📌 You can download the APK and install it on your Android device using the link below:
+
+-- https://drive.google.com/file/d/10MbsudR3asFQdMQ2cipoUtlk8wxYcrHt/view?usp=drivesdk 
+
+
